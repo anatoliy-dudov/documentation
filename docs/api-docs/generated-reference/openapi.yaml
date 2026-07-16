@@ -1,0 +1,328 @@
+openapi: 3.0.3
+info:
+  title: TaskFlow API
+  version: "1.4.0"
+  description: >
+    TaskFlow API allows you to manage projects and tasks programmatically:
+    create projects, assign tasks, track status changes, and subscribe to
+    updates. This specification is the single source of truth for this
+    reference — the page you're reading is rendered directly from this file.
+  contact:
+    name: TaskFlow Developer Relations
+    url: https://example.com/taskflow/support
+  license:
+    name: Proprietary (demo spec for portfolio purposes)
+servers:
+  - url: https://api.taskflow.example.com/v1
+    description: Production
+  - url: https://sandbox.taskflow.example.com/v1
+    description: Sandbox (test data, reset nightly)
+
+tags:
+  - name: Projects
+    description: Create and manage projects.
+  - name: Tasks
+    description: Create, update, and query tasks within a project.
+
+security:
+  - bearerAuth: []
+
+paths:
+  /projects:
+    get:
+      tags: [Projects]
+      summary: List projects
+      description: Returns a paginated list of projects visible to the authenticated user.
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of items to return (1-100).
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: cursor
+          in: query
+          description: Opaque pagination cursor returned by a previous request.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A page of projects.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Project"
+                  next_cursor:
+                    type: string
+                    nullable: true
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      tags: [Projects]
+      summary: Create a project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  example: "Website Redesign"
+                description:
+                  type: string
+                  example: "Q3 marketing site redesign"
+      responses:
+        "201":
+          description: Project created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /projects/{projectId}:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+        example: "proj_8f3ac1"
+    get:
+      tags: [Projects]
+      summary: Get a project
+      responses:
+        "200":
+          description: The requested project.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Projects]
+      summary: Archive a project
+      description: >
+        Archives a project. Archived projects are hidden from default list
+        views but remain accessible by ID and are not permanently deleted.
+      responses:
+        "204":
+          description: Project archived.
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{projectId}/tasks:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Tasks]
+      summary: List tasks in a project
+      parameters:
+        - name: status
+          in: query
+          description: Filter by task status.
+          schema:
+            $ref: "#/components/schemas/TaskStatus"
+      responses:
+        "200":
+          description: A list of tasks.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Task"
+    post:
+      tags: [Tasks]
+      summary: Create a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+                  example: "Draft homepage copy"
+                assignee_id:
+                  type: string
+                  nullable: true
+                  example: "usr_4471"
+                due_date:
+                  type: string
+                  format: date
+                  nullable: true
+      responses:
+        "201":
+          description: Task created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /tasks/{taskId}:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+        example: "task_1029ab"
+    get:
+      tags: [Tasks]
+      summary: Get a task
+      responses:
+        "200":
+          description: The requested task.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags: [Tasks]
+      summary: Update a task
+      description: Partial update. Only include the fields you want to change.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                status:
+                  $ref: "#/components/schemas/TaskStatus"
+                assignee_id:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: Task updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Tasks]
+      summary: Delete a task
+      responses:
+        "204":
+          description: Task deleted.
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: "Opaque API token, e.g. tfk_live_..."
+
+  schemas:
+    TaskStatus:
+      type: string
+      enum: [todo, in_progress, blocked, done]
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "proj_8f3ac1"
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        archived:
+          type: boolean
+          default: false
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "task_1029ab"
+        project_id:
+          type: string
+        title:
+          type: string
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+        assignee_id:
+          type: string
+          nullable: true
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: "validation_error"
+            message:
+              type: string
+              example: "The 'title' field is required."
+
+  responses:
+    BadRequest:
+      description: The request was malformed or failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Missing or invalid API token.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

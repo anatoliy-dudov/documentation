@@ -1,0 +1,156 @@
+site_name: Анатолий Дудов — Портфолио технического писателя
+site_description: >-
+  Портфолио технического писателя: примеры API-документации, базы знаний
+  и материалов по проблем-менеджменту.
+site_author: Anatoliy Dudov
+site_url: https://anatoliy-dudov.github.io/documentation/
+repo_name: anatoliy-dudov/documentation
+repo_url: https://github.com/anatoliy-dudov/documentation
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: ru
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Тёмная тема / Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Светлая тема / Light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+    - content.tabs.link
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/anatoliy-dudov/documentation
+      name: GitHub
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/anatoliy-dudov/
+      name: LinkedIn
+    - icon: fontawesome/brands/telegram
+      link: https://t.me/Object_NULL1332
+      name: Telegram
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - def_list
+  - tables
+  - footnotes
+  - toc:
+      permalink: true
+      title: На этой странице
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search
+  - render_swagger
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: ru
+          default: true
+          name: Русский
+          build: true
+          site_name: Анатолий Дудов — Портфолио технического писателя
+        - locale: en
+          name: English
+          build: true
+          site_name: Anatoliy Dudov — Technical Writer Portfolio
+          site_description: >-
+            Technical writer portfolio: API documentation, knowledge base
+            articles, and incident/problem management runbooks.
+          nav_translations:
+            Главная: Home
+            Обо мне: About me
+            API-документация: API Documentation
+            Обзор: Overview
+            "TaskFlow API — автогенерируемый референс": "TaskFlow API — generated reference"
+            "PayFlow API — аннотированная документация": "PayFlow API — annotated documentation"
+            Быстрый старт: Quickstart
+            Аутентификация: Authentication
+            Ошибки: Errors
+            Вебхуки: Webhooks
+            База знаний: Knowledge Base
+            Настройка единого входа (SSO): Setting up Single Sign-On (SSO)
+            "Устраняем ошибку 429 Too Many Requests": "Fixing 429 Too Many Requests"
+            "Вебхук PayFlow не приходит": "PayFlow webhook isn't arriving"
+            Часто задаваемые вопросы: FAQ
+            Онбординг новых сотрудников: New employee onboarding
+            Проблем-менеджмент: Problem Management
+            Плейбук реагирования на инциденты: Incident response playbook
+            База известных ошибок (KEDB): Known Error Database (KEDB)
+            Шаблон постмортема (RCA): Postmortem (RCA) template
+            Матрица эскалации: Escalation matrix
+            Ресурсы: Resources
+            Глоссарий: Glossary
+            Чек-листы: Checklists
+            Дальнейшее чтение: Further reading
+
+nav:
+  - Главная: index.md
+  - Обо мне: about.md
+  - API-документация:
+      - Обзор: api-docs/index.md
+      - "TaskFlow API — автогенерируемый референс": api-docs/generated-reference/index.md
+      - "PayFlow API — аннотированная документация":
+          - Обзор: api-docs/payment-api/index.md
+          - Быстрый старт: api-docs/payment-api/quickstart.md
+          - Аутентификация: api-docs/payment-api/authentication.md
+          - Ошибки: api-docs/payment-api/errors.md
+          - Вебхуки: api-docs/payment-api/webhooks.md
+  - База знаний:
+      - Обзор: knowledge-base/index.md
+      - Настройка единого входа (SSO): knowledge-base/kb-sso-setup.md
+      - "Устраняем ошибку 429 Too Many Requests": knowledge-base/kb-rate-limit-429.md
+      - "Вебхук PayFlow не приходит": knowledge-base/kb-webhook-troubleshooting.md
+      - Часто задаваемые вопросы: knowledge-base/kb-faq.md
+      - Онбординг новых сотрудников: knowledge-base/kb-onboarding.md
+  - Проблем-менеджмент:
+      - Обзор: problem-management/index.md
+      - Плейбук реагирования на инциденты: problem-management/incident-playbook.md
+      - База известных ошибок (KEDB): problem-management/known-error-database.md
+      - Шаблон постмортема (RCA): problem-management/postmortem-template.md
+      - Матрица эскалации: problem-management/escalation-matrix.md
+  - Ресурсы:
+      - Обзор: resources/index.md
+      - Глоссарий: resources/glossary.md
+      - Чек-листы: resources/checklists.md
+      - Дальнейшее чтение: resources/further-reading.md
